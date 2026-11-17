@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Harit Dharohar — AI-Powered Smart Agriculture & Soil Intelligence Platform</title>
+  <meta name="description" content="Harit Dharohar: Smart Agriculture System with 7-Parameter Soil Fertility, Live Open-Meteo Weather API & AI Farming Recommendations.">
+
+  <!-- PWA Manifest & App Metas -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#16a34a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Harit Dharohar">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <!-- Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Chart.js Engine -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Master Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Offline Warning Banner -->
+  <div id="offline-banner">
+    <i class="fas fa-wifi-slash"></i> Offline Mode: Hardware Disconnected.
+  </div>
+
+  <!-- Toast Notification Popup -->
+  <div id="app-toast" class="toast-popup" style="display:none; position:fixed; bottom:24px; right:24px; background:#0f2916; color:#fff; padding:12px 20px; border-radius:12px; z-index:9999; box-shadow:0 8px 24px rgba(0,0,0,0.3); font-weight:600; font-size:0.85rem; align-items:center; gap:8px;">
+    <i class="fas fa-check-circle" style="color:#4ade80;"></i>
+    <span id="toast-text">Notification message</span>
+  </div>
+
+  <!-- Master Application Layout -->
+  <div class="app-layout">
+
+    <!-- ====================================================================
+         LEFT SIDEBAR (EXACT MATCH TO DESIGN)
+         ==================================================================== -->
+    <aside class="sidebar" id="app-sidebar">
+      <!-- Sidebar Brand Header -->
+      <div class="sidebar-brand">
+        <svg class="brand-leaf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+          <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+        </svg>
+        <div class="brand-text-block">
+          <h1>Harit Dharohar</h1>
+          <p>Smart Agriculture</p>
+        </div>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="sidebar-menu">
+        <a class="sidebar-item active" data-view="view-dashboard">
+          <i class="fas fa-home"></i> <span>Dashboard</span>
+        </a>
+        <a class="sidebar-item" data-view="view-soil">
+          <i class="fas fa-flask"></i> <span>Soil Intelligence</span>
+        </a>
+        <a class="sidebar-item" data-view="view-weather">
+          <i class="fas fa-cloud-sun"></i> <span>Weather Station</span>
+        </a>
+        <a class="sidebar-item" data-view="view-irrigation">
+          <i class="fas fa-tint"></i> <span>Smart Irrigation</span>
+        </a>
+        <a class="sidebar-item" data-view="view-advisor">
+          <i class="fas fa-robot"></i> <span>AI Agriculture Advisor</span>
+        </a>
+        <a class="sidebar-item" data-view="view-rotation">
+          <i class="fas fa-sync-alt"></i> <span>Crop &amp; Rotation</span>
+        </a>
+        <a class="sidebar-item" data-view="view-location">
+          <i class="fas fa-map-marker-alt"></i> <span>Location Settings</span>
+        </a>
+        <a class="sidebar-item" data-view="view-device">
+          <i class="fas fa-microchip"></i> <span>Device Management</span>
+        </a>
+        <a class="sidebar-item" data-view="view-settings">
+          <i class="fas fa-cog"></i> <span>System Settings</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Footer with Farm Silhouette & Credits -->
+      <div class="sidebar-footer">
+        <div class="sidebar-farm-art">
+          <svg viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Rolling Hills -->
+            <path d="M0 60 Q 50 35, 100 48 T 200 40 L 200 60 Z" fill="#0d3b1f" opacity="0.6"/>
+            <path d="M0 60 Q 60 45, 120 52 T 200 48 L 200 60 Z" fill="#15572e" opacity="0.9"/>
+            <!-- Weather Station Tower Silhouette -->
+            <line x1="165" y1="52" x2="165" y2="18" stroke="#4ade80" stroke-width="1.8"/>
+            <line x1="158" y1="52" x2="165" y2="35" stroke="#4ade80" stroke-width="1.2"/>
+            <line x1="172" y1="52" x2="165" y2="35" stroke="#4ade80" stroke-width="1.2"/>
+            <rect x="160" y="22" width="10" height="7" rx="1.5" fill="#22c55e" stroke="#86efac" stroke-width="0.8"/>
+            <circle cx="165" cy="16" r="3" fill="#86efac"/>
+            <line x1="158" y1="16" x2="172" y2="16" stroke="#86efac" stroke-width="1.2"/>
+            <!-- Tractor Silhouette -->
+            <circle cx="45" cy="48" r="6" stroke="#4ade80" stroke-width="1.8" fill="#072111"/>
+            <circle cx="62" cy="51" r="3.5" stroke="#4ade80" stroke-width="1.4" fill="#072111"/>
+            <path d="M43 45 L43 36 L52 36 L56 42 L64 43 L64 48 L56 48 L51 44 Z" fill="#22c55e"/>
+            <rect x="46" y="38" width="5" height="4" fill="#86efac"/>
+            <line x1="60" y1="38" x2="60" y2="43" stroke="#4ade80" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div class="sidebar-credits">
+          <span>Smart Agriculture</span>
+          <strong>Harit Dharohar V2</strong>
+          <span class="hub-tag">IoT &amp; AI Platform</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ====================================================================
+         MAIN VIEWPORT & TOP NAVBAR
+         ==================================================================== -->
+    <main class="main-content">
+
+      <!-- Top Navbar (Search, Location, Notifications, Install, Profile) -->
+      <header class="top-navbar">
+        <div class="top-nav-left">
+          <button class="mobile-toggle-btn" id="btn-mobile-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="search-pill-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search here..." id="top-search-input">
+          </div>
+        </div>
+
+        <div class="top-nav-right">
+          <!-- Location Pill -->
+          <div class="location-selector-pill" id="btn-location-dropdown" title="Change Location">
+            <i class="fas fa-map-marker-alt"></i>
+            <span id="active-location-name">Kanpur, Uttar Pradesh</span>
+          </div>
+
+          <!-- Notification Bell with Red Badge -->
+          <div class="icon-btn-round" id="btn-notifications" title="Notifications">
+            <i class="far fa-bell"></i>
+            <span class="notification-badge-num">2</span>
+          </div>
+
+          <!-- Install App Button -->
+          <button class="btn-top-install" id="btn-sidebar-install">
+            <i class="fas fa-arrow-down"></i>
+            <span>Install App</span>
+          </button>
+
+          <!-- User Profile Icon -->
+          <div class="user-avatar-btn" title="Farmer Profile">
+            <i class="fas fa-user"></i>
+          </div>
+        </div>
+      </header>
+
+      <!-- Panoramic Sunny Agricultural Field Banner -->
+      <section class="hero-field-banner">
+        <h2>Harit Dharohar</h2>
+        <p>AI-Powered Smart Agriculture &amp; Soil Intelligence Platform</p>
+      </section>
+
+      <!-- Dynamic Views Container -->
+      <div class="dashboard-viewport">
+
+        <!-- ==============================================================
+             PAGE VIEW: DASHBOARD (EXACT DITTO 1:1 MATCH TO MOCKUP)
+             ============================================================== -->
+        <div class="view-panel active" id="view-dashboard">
+
+          <!-- 1. Row of 6 Top KPI Summary Status Cards -->
+          <div class="top-kpi-row">
+            <!-- 1. Device Status -->
+            <div class="kpi-mini-card">
+              <div class="kpi-mini-icon green-chip">
+                <i class="fas fa-microchip"></i>
+              </div>
+              <div class="kpi-mini-info">
+                <span class="kpi-mini-label">Device Status</span>
+                <span class="kpi-mini-val" id="kpi-device-status">
+                  Offline <span class="status-dot-red"></span>
+                </span>
+              </div>
+            </div>
+
+            <!-- 2. Irrigation Mode -->
+            <div class="kpi-mini-card">
+              <div class="kpi-mini-icon green-leaf">
+                <i class="fas fa-leaf"></i>
+              </div>
+              <div class="kpi-mini-info">
+                <span class="kpi-mini-label">Irrigation Mode</span>
+                <span class="kpi-mini-val" id="kpi-irrigation-mode">
+                  Auto <span class="status-dot-green"></span>
+                </span>
+              </div>
+            </div>
+
+            <!-- 3. Pump Status -->
+            <div class="kpi-mini-card">
+              <div class="kpi-mini-icon green-pump">
+                <i class="fas fa-faucet-drip"></i>
+              </div>
+              <div class="kpi-mini-info">
+                <span class="kpi-mini-label">Pump Status</span>
+                <span class="kpi-mini-val" id="kpi-pump-status" style="font-size:0.85rem; color:#dc2626;">Unknown (Offline)</span>
+              </div>
+            </div>
+
+            <!-- 4. Soil Moisture -->
+            <div class="kpi-mini-card">
+              <div class="kpi-mini-icon amber-drop">
+                <i class="fas fa-tint"></i>
+              </div>
+              <div class="kpi-mini-info">
+                <span class="kpi-mini-label">Soil Moisture</span>
+                <span class="kpi-mini-val" id="kpi-moisture-val">--</span>
+                <span class="kpi-mini-subtag subtag-gray" id="kpi-moisture-tag">No Data Available</span>
+              </div>
+            </div>
+
+            <!-- 5. Temperature -->
+            <div class="kpi-mini-card">
+              <div class="kpi-mini-icon red-temp">
+                <i class="fas fa-temperature-half"></i>
+              </div>
+              <div class="kpi-mini-info">
+                <span class="kpi-mini-label">Temperature</span>
+                <span class="kpi-mini-val" id="kpi-weather-temp">-- °C</span>
+              </div>
+            </div>
+
+            <!-- 6. Rain Forecast -->
+            <div class="kpi-mini-card">
+              <div class="kpi-mini-icon blue-rain">
+                <i class="fas fa-cloud-showers-heavy"></i>
+              </div>
+              <div class="kpi-mini-info">
+                <span class="kpi-mini-label">Rain Forecast</span>
+                <span class="kpi-mini-val" id="kpi-rain-prob">-- %</span>
+                <span class="kpi-mini-subtag subtag-blue">Next 24 Hours</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Master 2-Column Dashboard Grid -->
+          <div class="dashboard-2col-grid">
+
+            <!-- LEFT COLUMN -->
+            <div class="dashboard-col">
+
+              <!-- CARD 1: 7-Parameter Soil Report -->
+              <div class="nature-card">
+                <div class="nature-card-header">
+                  <div class="card-title-left">
+                    <i class="fas fa-seedling"></i>
+                    <h3>7-Parameter Soil Report</h3>
+                  </div>
+                  <a class="card-link-right" onclick="window.switchView('view-soil')">
+                    View Details →
+                  </a>
+                </div>
+
+                <!-- Empty state notice when offline -->
+                <div id="soil-offline-alert" class="soil-offline-notice">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  <span>ESP32 is disconnected. No sensor data available. Connect hardware to stream live readings.</span>
+                </div>
+
+                <!-- Row 1 (4 parameters): pH, EC, N, P -->
+                <div class="soil-report-row1">
+                  <!-- pH -->
+                  <div class="soil-param-tile tint-ph">
+                    <div class="param-tile-header">
+                      <i class="fas fa-flask" style="color:#0d9488;"></i>
+                      <span>pH</span>
+                    </div>
+                    <div class="param-tile-val" id="val-ph">--</div>
+                    <span class="param-status-pill offline" id="badge-ph">Offline</span>
+                  </div>
+
+                  <!-- EC -->
+                  <div class="soil-param-tile tint-ec">
+                    <div class="param-tile-header">
+                      <i class="fas fa-bolt" style="color:#16a34a;"></i>
+                      <span>EC</span>
+                    </div>
+                    <div class="param-tile-val" id="val-ec">-- <small>dS/m</small></div>
+                    <span class="param-status-pill offline" id="badge-ec">Offline</span>
+                  </div>
+
+                  <!-- Nitrogen (N) -->
+                  <div class="soil-param-tile tint-n">
+                    <div class="param-tile-header">
+                      <i class="fas fa-circle-dot" style="color:#ef4444;"></i>
+                      <span>Nitrogen (N)</span>
+                    </div>
+                    <div class="param-tile-val" id="val-n">-- <small>mg/kg</small></div>
+                    <span class="param-status-pill offline" id="badge-n">Offline</span>
+                  </div>
+
+                  <!-- Phosphorus (P) -->
+                  <div class="soil-param-tile tint-p">
+                    <div class="param-tile-header">
+                      <i class="fas fa-circle-dot" style="color:#16a34a;"></i>
+                      <span>Phosphorus (P)</span>
+                    </div>
+                    <div class="param-tile-val" id="val-p">-- <small>mg/kg</small></div>
+                    <span class="param-status-pill offline" id="badge-p">Offline</span>
+                  </div>
+                </div>
+
+                <!-- Row 2 (3 parameters): K, Soil Moisture, Soil Temperature -->
+                <div class="soil-report-row2">
+                  <!-- Potassium (K) -->
+                  <div class="soil-param-tile tint-k">
+                    <div class="param-tile-header">
+                      <i class="fas fa-circle-dot" style="color:#16a34a;"></i>
+                      <span>Potassium (K)</span>
+                    </div>
+                    <div class="param-tile-val" id="val-k">-- <small>mg/kg</small></div>
+                    <span class="param-status-pill offline" id="badge-k">Offline</span>
+                  </div>
+
+                  <!-- Soil Moisture -->
+                  <div class="soil-param-tile tint-moisture">
+                    <div class="param-tile-header">
+                      <i class="fas fa-droplet" style="color:#0284c7;"></i>
+                      <span>Soil Moisture</span>
+                    </div>
+                    <div class="param-tile-val" id="val-moisture">-- <small>%</small></div>
+                    <span class="param-status-pill offline" id="badge-moisture">Offline</span>
+                  </div>
+
+                  <!-- Soil Temperature -->
+                  <div class="soil-param-tile tint-temp">
+                    <div class="param-tile-header">
+                      <i class="fas fa-temperature-half" style="color:#16a34a;"></i>
+                      <span>Soil Temperature</span>
+                    </div>
+                    <div class="param-tile-val" id="val-temp">-- <small>°C</small></div>
+                    <span class="param-status-pill offline" id="badge-temp">Offline</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CARD 2: Smart Irrigation Control -->
+              <div class="nature-card">
+                <div class="nature-card-header">
+                  <div class="card-title-left">
+                    <i class="fas fa-tint"></i>
+                    <h3>Smart Irrigation Control</h3>
+                  </div>
+                  <a class="card-link-right" onclick="window.switchView('view-irrigation')">
+                    Irrigation History →
+                  </a>
+                </div>
+
+                <!-- Irrigation Mode Switcher Row -->
+                <div class="irrigation-mode-row">
+                  <span class="irrigation-mode-label">Irrigation Mode</span>
+                  <div class="mode-segmented-pills">
+                    <button class="btn-mode-seg active" id="btn-dash-mode-auto">
+                      <i class="fas fa-seedling"></i> Auto <small>(Sensor Based)</small>
+                    </button>
+                    <button class="btn-mode-seg inactive" id="btn-dash-mode-manual">
+                      <i class="fas fa-hand-pointer"></i> Manual <small>(User Control)</small>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Control Sub-row: Pump Control, Threshold, Last Irrigation -->
+                <div class="irrigation-ctrl-subgrid">
+                  <!-- Pump Control -->
+                  <div class="irrigation-sub-box">
+                    <i class="fas fa-faucet-drip" id="dash-pump-icon"></i>
+                    <div class="irrigation-sub-content">
+                      <span class="irrigation-sub-label">Pump Control</span>
+                      <div style="display:flex; align-items:center; gap:8px; margin-top:2px;">
+                        <span class="badge-pump-off" id="dash-pump-badge">OFF</span>
+                        <button id="dash-btn-toggle-pump" style="border:none; background:#e2e8f0; color:#475569; padding:2px 8px; border-radius:6px; font-size:0.7rem; font-weight:700; cursor:pointer;" title="Manual Toggle">Toggle</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Moisture Threshold -->
+                  <div class="irrigation-sub-box">
+                    <i class="fas fa-bullseye" style="color:#16a34a;"></i>
+                    <div class="irrigation-sub-content">
+                      <span class="irrigation-sub-label">Moisture Threshold</span>
+                      <span class="irrigation-sub-val" id="dash-moisture-thresh">30 %</span>
+                    </div>
+                  </div>
+
+                  <!-- Last Irrigation -->
+                  <div class="irrigation-sub-box">
+                    <i class="far fa-clock" style="color:#16a34a;"></i>
+                    <div class="irrigation-sub-content">
+                      <span class="irrigation-sub-label">Last Irrigation</span>
+                      <span class="irrigation-sub-val" style="font-size:0.85rem;" id="dash-last-irrigation">No data recorded</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Info Alert Tip -->
+                <div class="irrigation-info-note">
+                  <i class="fas fa-info-circle"></i>
+                  <span>Auto mode: Pump will run automatically when soil moisture &lt; 30% and no rain is detected.</span>
+                </div>
+              </div>
+
+              <!-- CARD 3: Soil Moisture Trend -->
+              <div class="nature-card">
+                <div class="nature-card-header">
+                  <div class="card-title-left">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Soil Moisture Trend</h3>
+                  </div>
+                  <div style="font-size:0.78rem; font-weight:700; color:var(--text-muted); background:#f8fafc; border:1px solid #e2e8f0; padding:4px 10px; border-radius:8px;">
+                    Last 7 Days <i class="fas fa-chevron-down" style="font-size:0.65rem; margin-left:4px;"></i>
+                  </div>
+                </div>
+
+                <div class="chart-box-wrapper" style="position:relative; min-height:160px;">
+                  <canvas id="soil-moisture-trend-chart" style="display:none;"></canvas>
+                  <div id="chart-empty-state" class="chart-empty-placeholder">
+                    <i class="fas fa-chart-line" style="font-size:1.8rem; color:#94a3b8; margin-bottom:8px;"></i>
+                    <strong style="color:#475569; font-size:0.88rem;">No historical records in database yet</strong>
+                    <span style="font-size:0.75rem; color:#94a3b8; margin-top:2px;">Telemetry will automatically plot here as ESP32 logs real sensor data.</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <div class="dashboard-col">
+
+              <!-- CARD 1: Weather (Open-Meteo) -->
+              <div class="nature-card">
+                <div class="nature-card-header">
+                  <div class="card-title-left">
+                    <i class="fas fa-cloud-sun"></i>
+                    <h3>Weather <small style="font-size:0.78rem; color:#64748b; font-weight:600;">(Open-Meteo)</small> <i class="fas fa-external-link-alt" style="font-size:0.75rem; color:#94a3b8; margin-left:2px;"></i></h3>
+                  </div>
+                  <a class="card-link-right" onclick="window.switchView('view-weather')">
+                    View Forecast →
+                  </a>
+                </div>
+
+                <!-- Current Weather Header Block -->
+                <div class="weather-main-row">
+                  <div class="weather-temp-block">
+                    <i class="fas fa-cloud-sun weather-sun-cloud-icon"></i>
+                    <div>
+                      <div class="weather-temp-big" id="owm-temp">-- °C</div>
+                      <div class="weather-condition-sub" id="owm-desc">Fetching Open-Meteo...</div>
+                    </div>
+                  </div>
+
+                  <div class="weather-stats-col">
+                    <div class="weather-stat-item">
+                      <i class="fas fa-tint"></i>
+                      <span>Humidity: <strong id="owm-humidity">-- %</strong></span>
+                    </div>
+                    <div class="weather-stat-item">
+                      <i class="fas fa-wind"></i>
+                      <span>Wind: <strong id="owm-wind">-- km/h</strong></span>
+                    </div>
+                    <div class="weather-stat-item">
+                      <i class="fas fa-gauge-high"></i>
+                      <span>Pressure: <strong id="owm-pressure">-- hPa</strong></span>
+                    </div>
+                    <div class="weather-stat-item">
+                      <i class="fas fa-cloud-rain"></i>
+                      <span>Rain (Today): <strong id="owm-rain">-- mm</strong></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Next 24 Hours Forecast Strip -->
+                <div class="hourly-forecast-strip">
+                  <div class="hourly-title">Next 24 Hours Forecast</div>
+                  <div class="hourly-slots-grid">
+                    <div class="hourly-slot">
+                      <span class="hourly-time">12 PM</span>
+                      <i class="fas fa-cloud-sun"></i>
+                      <span class="hourly-temp" id="h-slot-0">--°</span>
+                    </div>
+                    <div class="hourly-slot">
+                      <span class="hourly-time">1 PM</span>
+                      <i class="fas fa-cloud-sun"></i>
+                      <span class="hourly-temp" id="h-slot-1">--°</span>
+                    </div>
+                    <div class="hourly-slot">
+                      <span class="hourly-time">2 PM</span>
+                      <i class="fas fa-cloud-sun"></i>
+                      <span class="hourly-temp" id="h-slot-2">--°</span>
+                    </div>
+                    <div class="hourly-slot">
+                      <span class="hourly-time">3 PM</span>
+                      <i class="fas fa-cloud-sun"></i>
+                      <span class="hourly-temp" id="h-slot-3">--°</span>
+                    </div>
+                    <div class="hourly-slot">
+                      <span class="hourly-time">4 PM</span>
+                      <i class="fas fa-cloud-sun"></i>
+                      <span class="hourly-temp" id="h-slot-4">--°</span>
+                    </div>
+                    <div class="hourly-slot">
+                      <span class="hourly-time">5 PM</span>
+                      <i class="fas fa-cloud-sun"></i>
+                      <span class="hourly-temp" id="h-slot-5">--°</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CARD 2: AI Agriculture Advisor -->
+              <div class="nature-card">
+                <div class="nature-card-header">
+                  <div class="card-title-left">
+                    <i class="fas fa-robot"></i>
+                    <h3>AI Agriculture Advisor</h3>
+                  </div>
+                  <a class="card-link-right" onclick="window.switchView('view-advisor')">
+                    View All →
+                  </a>
+                </div>
+
+                <!-- Advisor Live/Offline Status Notice -->
+                <div id="advisor-status-notice" class="advisor-offline-notice">
+                  <i class="fas fa-info-circle"></i>
+                  <span>Soil telemetry offline: Showing baseline regional agronomic guidance for Kanpur (Rabi Season).</span>
+                </div>
+
+                <div class="advisor-card-content">
+                  <img src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=300&q=80" alt="Wheat Golden Crop" class="advisor-crop-img">
+                  <div class="advisor-crop-info">
+                    <span class="advisor-top-badge">Top Recommendation</span>
+                    <div class="advisor-crop-heading">
+                      <span>Wheat (गेहूँ)</span>
+                      <span class="badge-highly-suitable">Regional Match</span>
+                    </div>
+                    <ul class="advisor-bullets">
+                      <li><i class="fas fa-info-circle"></i> <span>Hardware offline: Connect ESP32 for live soil pH and NPK nutrient rating.</span></li>
+                      <li><i class="fas fa-check-circle"></i> <span>Optimal sowing window for Kanpur agricultural zone (Rabi season).</span></li>
+                      <li><i class="fas fa-check-circle"></i> <span>Rotate with leguminous pulse (Chickpea/Moong) for natural nitrogen enrichment.</span></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CARD 3: Crop Rotation Suggestion -->
+              <div class="nature-card">
+                <div class="nature-card-header">
+                  <div class="card-title-left">
+                    <i class="fas fa-sync-alt"></i>
+                    <h3>Crop Rotation Suggestion</h3>
+                  </div>
+                </div>
+
+                <div class="rotation-strip-box">
+                  <div class="rotation-crop-pill">
+                    <span class="rotation-crop-pill-label">Previous Crop</span>
+                    <span class="rotation-crop-pill-name">🌾 Rice (धान)</span>
+                  </div>
+                  <i class="fas fa-arrow-right rotation-arrow-icon"></i>
+                  <div class="rotation-crop-pill" style="border-color:#86efac; background:#f0fdf4;">
+                    <span class="rotation-crop-pill-label" style="color:#15803d;">Recommended Next</span>
+                    <span class="rotation-crop-pill-name" style="color:#15803d;">🟡 Chickpea (चना)</span>
+                  </div>
+                  <div class="rotation-benefit-text">
+                    <i class="fas fa-seedling"></i>
+                    <span>Improves soil nitrogen through biological fixation (Rhizobium).</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- ==============================================================
+             PAGE VIEW: SOIL INTELLIGENCE (DETAILED VIEW)
+             ============================================================== -->
+        <div class="view-panel" id="view-soil">
+          <div class="nature-card" style="margin-bottom:20px;">
+            <div class="nature-card-header">
+              <div class="card-title-left">
+                <i class="fas fa-flask"></i>
+                <h2>Soil Intelligence &amp; 7-Parameter Telemetry</h2>
+              </div>
+              <span class="badge-highly-suitable">MAX485 Modbus Sensor Node</span>
+            </div>
+            <p style="font-size:0.88rem; color:#64748b; margin-bottom:18px;">
+              Continuous RS-485 Modbus RTU telemetry measuring physical soil moisture, temperature, electrical conductivity, acidity, and primary NPK macronutrients.
+            </p>
+
+            <div class="soil-report-row1" style="margin-bottom:14px;">
+              <div class="soil-param-tile tint-ph">
+                <div class="param-tile-header"><span>Soil pH Level</span></div>
+                <div class="param-tile-val" id="val-ph-det">--</div>
+                <span class="param-status-pill offline" id="badge-ph-det">Offline</span>
+              </div>
+              <div class="soil-param-tile tint-ec">
+                <div class="param-tile-header"><span>Conductivity (EC)</span></div>
+                <div class="param-tile-val" id="val-ec-det">-- <small>dS/m</small></div>
+                <span class="param-status-pill offline" id="badge-ec-det">Offline</span>
+              </div>
+              <div class="soil-param-tile tint-n">
+                <div class="param-tile-header"><span>Nitrogen (N)</span></div>
+                <div class="param-tile-val" id="val-n-det">-- <small>mg/kg</small></div>
+                <span class="param-status-pill offline" id="badge-n-det">Offline</span>
+              </div>
+              <div class="soil-param-tile tint-p">
+                <div class="param-tile-header"><span>Phosphorus (P)</span></div>
+                <div class="param-tile-val" id="val-p-det">-- <small>mg/kg</small></div>
+                <span class="param-status-pill offline" id="badge-p-det">Offline</span>
+              </div>
+            </div>
+
+            <div class="soil-report-row2">
+              <div class="soil-param-tile tint-k">
+                <div class="param-tile-header"><span>Potassium (K)</span></div>
+                <div class="param-tile-val" id="val-k-det">-- <small>mg/kg</small></div>
+                <span class="param-status-pill offline" id="badge-k-det">Offline</span>
+              </div>
+              <div class="soil-param-tile tint-moisture">
+                <div class="param-tile-header"><span>Soil Moisture</span></div>
+                <div class="param-tile-val" id="val-moisture-det">-- <small>%</small></div>
+                <span class="param-status-pill offline" id="badge-moisture-det">Offline</span>
+              </div>
+              <div class="soil-param-tile tint-temp">
+                <div class="param-tile-header"><span>Soil Temperature</span></div>
+                <div class="param-tile-val" id="val-temp-det">-- <small>°C</small></div>
+                <span class="param-status-pill offline" id="badge-temp-det">Offline</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==============================================================
+             PAGE VIEW: LIVE WEATHER (FULL OPEN-METEO VIEW)
+             ============================================================== -->
+        <div class="view-panel" id="view-weather">
+          <div class="nature-card" style="margin-bottom:20px;">
+            <div class="nature-card-header">
+              <div class="card-title-left">
+                <i class="fas fa-cloud-sun"></i>
+                <h2>Open-Meteo Weather Forecast Engine</h2>
+              </div>
+              <span style="font-size:0.75rem; color:#0284c7; font-weight:700;">Weather data by Open-Meteo</span>
+            </div>
+            <p style="font-size:0.88rem; color:#64748b; margin-bottom:16px;">
+              Global high-resolution numerical weather models integrated for Kanpur, Uttar Pradesh (and user custom farm coordinates).
+            </p>
+            <div class="chart-box-wrapper" style="height:260px;">
+              <canvas id="weather-full-chart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==============================================================
+             PAGE VIEW: SMART IRRIGATION (IRRIGATION ZONE ONE)
+             ============================================================== -->
+        <div class="view-panel" id="view-irrigation">
+          <div class="nature-card" style="margin-bottom:20px;">
+            <div class="nature-card-header">
+              <div class="card-title-left">
+                <i class="fas fa-water"></i>
+                <h2>Smart Irrigation Control Station (Irrigation Zone One)</h2>
+              </div>
+              <span class="badge-highly-suitable">Failsafe 4s ON / 1s OFF Pulse Loop</span>
+            </div>
+
+            <!-- Mode Selector Segmented Pills -->
+            <div style="background:#f1f5f9; padding:6px; border-radius:12px; display:inline-flex; gap:6px; margin:16px 0;">
+              <button id="btn-mode-auto" style="padding:10px 22px; border-radius:8px; border:none; font-weight:800; font-size:0.88rem; cursor:pointer; background:#16a34a; color:#fff; display:flex; align-items:center; gap:8px;">
+                <i class="fas fa-robot"></i> <span>AUTO MODE (Sensor-Driven)</span>
+              </button>
+              <button id="btn-mode-manual" style="padding:10px 22px; border-radius:8px; border:none; font-weight:800; font-size:0.88rem; cursor:pointer; background:#fff; color:#475569; display:flex; align-items:center; gap:8px;">
+                <i class="fas fa-hand-pointer"></i> <span>MANUAL MODE (Dashboard ON/OFF)</span>
+              </button>
+            </div>
+
+            <!-- Auto Mode Explanation & Settings Section -->
+            <div id="dedicated-auto-controls-section" style="background:#f0fdf4; border:1px solid #bbf7d0; padding:20px; border-radius:14px; margin-bottom:20px;">
+              <h3 style="color:#15803d; font-family:var(--font-heading); margin-bottom:8px;">
+                <i class="fas fa-check-circle"></i> Automatic Mode Active
+              </h3>
+              <p style="font-size:0.88rem; color:#334155; line-height:1.5;">
+                In <strong>Auto Mode</strong>, the ESP32 microcontroller continuously evaluates live soil sensor readings. If soil moisture falls below 30%, the pump starts automatically in 4s ON / 1s OFF pulses. When moisture reaches 50%, the pump shuts off.
+              </p>
+
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin-top:16px;">
+                <div style="background:#fff; padding:14px; border-radius:10px; border:1px solid #bbf7d0;">
+                  <span style="font-size:0.75rem; color:#64748b; font-weight:700;">CURRENT SOIL MOISTURE</span>
+                  <div style="font-size:1.6rem; font-weight:800; color:#64748b;" id="dedicated-current-moisture">--</div>
+                  <span style="font-size:0.72rem; color:#64748b; font-weight:700;" id="dedicated-current-moisture-tag">Status: Sensor Offline</span>
+                </div>
+                <div style="background:#fff; padding:14px; border-radius:10px; border:1px solid #bbf7d0;">
+                  <span style="font-size:0.75rem; color:#64748b; font-weight:700;">TRIGGER THRESHOLD</span>
+                  <div style="font-size:1.6rem; font-weight:800; color:#0f2916;">&lt; 30%</div>
+                  <span style="font-size:0.72rem; color:#64748b;">Starts pump when soil is dry</span>
+                </div>
+                <div style="background:#fff; padding:14px; border-radius:10px; border:1px solid #bbf7d0;">
+                  <span style="font-size:0.75rem; color:#64748b; font-weight:700;">STOP TARGET THRESHOLD</span>
+                  <div style="font-size:1.6rem; font-weight:800; color:#0f2916;">&ge; 50%</div>
+                  <span style="font-size:0.72rem; color:#64748b;">Stops pump at field capacity</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Manual Mode Controls Section -->
+            <div id="dedicated-manual-controls-section" style="display:none; background:#fffbeb; border:1px solid #fde68a; padding:20px; border-radius:14px; margin-bottom:20px;">
+              <h3 style="color:#b45309; font-family:var(--font-heading); margin-bottom:8px;">
+                <i class="fas fa-hand-paper"></i> Manual Override Mode Active
+              </h3>
+              <p style="font-size:0.88rem; color:#451a03; line-height:1.5;">
+                In <strong>Manual Mode</strong>, you can turn the water pump ON or OFF manually at any time through the dashboard below. Hardware safety interlocks (Rain sensor) remain active for physical safety.
+              </p>
+
+              <div style="display:flex; align-items:center; gap:20px; margin-top:16px;">
+                <button id="btn-manual-pump-toggle" style="background:#16a34a; color:#fff; border:none; padding:14px 28px; border-radius:10px; font-size:1.05rem; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:10px; box-shadow:0 4px 14px rgba(22,163,74,0.3);">
+                  <i class="fas fa-play"></i> Turn Pump ON
+                </button>
+                <div>
+                  <div style="font-size:0.75rem; color:#64748b; font-weight:700;">CURRENT PUMP STATE:</div>
+                  <div id="dedicated-pump-live-state" style="font-size:1.3rem; font-weight:800; color:#dc2626;">PUMP IS STOPPED</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dedicated Irrigation Sector: Irrigation Zone One -->
+            <div style="margin-top:20px;">
+              <h3 style="font-family:var(--font-heading); font-size:1.05rem; font-weight:800; color:var(--text-main); margin-bottom:10px;">
+                <i class="fas fa-water" style="color:#16a34a;"></i> Dedicated Irrigation Sector: Irrigation Zone One
+              </h3>
+              <div id="irrigation-zones-container">
+                <!-- Dynamically rendered -->
+              </div>
+            </div>
+
+            <!-- Safety & Emergency Controls -->
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-top:20px; padding-top:16px; border-top:1px solid #e2e8f0;">
+              <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; font-size:0.85rem; color:#475569;">
+                <input type="checkbox" id="chk-simulate-rain" style="width:16px; height:16px;">
+                <i class="fas fa-cloud-showers-heavy" style="color:#0284c7;"></i> Test Rain Sensor Cutoff (GPIO 27)
+              </label>
+
+              <button id="btn-emergency-stop" style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:10px 20px; border-radius:8px; font-weight:800; font-size:0.85rem; cursor:pointer; display:flex; align-items:center; gap:8px;">
+                <i class="fas fa-exclamation-triangle"></i> Emergency Shutoff
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==============================================================
+             PAGE VIEW: AI AGRICULTURE ADVISOR & CROPS
+             ============================================================== -->
+        <div class="view-panel" id="view-advisor">
+          <div class="nature-card" style="margin-bottom:20px;">
+            <div class="nature-card-header">
+              <div class="card-title-left">
+                <i class="fas fa-robot"></i>
+                <h2>AI Agriculture Advisor &amp; Crop Intelligence</h2>
+              </div>
+              <span class="badge-highly-suitable">ICAR Agronomic Database</span>
+            </div>
+            <p style="font-size:0.88rem; color:#64748b; margin-bottom:16px;">
+              Agronomic suitability evaluation based on your field's soil pH, EC, available N-P-K, and Open-Meteo local weather.
+            </p>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
+              <!-- Wheat -->
+              <div class="soil-param-tile" style="text-align:left; align-items:flex-start; padding:16px;">
+                <div style="display:flex; justify-content:space-between; width:100%;">
+                  <strong style="font-size:1.05rem;">🌾 Wheat (Triticum aestivum)</strong>
+                  <span class="param-status-pill normal">92% Match</span>
+                </div>
+                <div style="font-size:0.8rem; color:#64748b; margin-top:6px;">Season: <strong>Rabi (Winter)</strong> | Water: <strong>450 mm</strong></div>
+                <p style="font-size:0.75rem; color:#334155; margin-top:6px;">High yield potential. Highly recommended following a leguminous pulse crop like Moong or Chickpea.</p>
+              </div>
+
+              <!-- Chickpea -->
+              <div class="soil-param-tile tint-ec" style="text-align:left; align-items:flex-start; padding:16px;">
+                <div style="display:flex; justify-content:space-between; width:100%;">
+                  <strong style="font-size:1.05rem; color:#15803d;">🌱 Chickpea / Gram (Cicer arietinum)</strong>
+                  <span class="param-status-pill normal">96% Top Match</span>
+                </div>
+                <div style="font-size:0.8rem; color:#15803d; margin-top:6px;">Biological N-Fixation: <strong>+35 to +50 kg/ha N (Rhizobium)</strong></div>
+                <p style="font-size:0.75rem; color:#334155; margin-top:6px;">Top soil restorer. Root nodules enrich nitrogen naturally, reducing synthetic fertilizer costs for next harvest.</p>
+              </div>
+
+              <!-- Mustard -->
+              <div class="soil-param-tile" style="text-align:left; align-items:flex-start; padding:16px;">
+                <div style="display:flex; justify-content:space-between; width:100%;">
+                  <strong style="font-size:1.05rem;">🌼 Mustard (Brassica juncea)</strong>
+                  <span class="param-status-pill normal">88% Match</span>
+                </div>
+                <div style="font-size:0.8rem; color:#64748b; margin-top:6px;">Bio-Fumigation: <strong>Glucosinolates suppress nematodes</strong></div>
+                <p style="font-size:0.75rem; color:#334155; margin-top:6px;">Excellent oilseed crop with low irrigation needs. Natural pest barrier for wheat fields.</p>
+              </div>
+
+              <!-- Potato -->
+              <div class="soil-param-tile tint-n" style="text-align:left; align-items:flex-start; padding:16px;">
+                <div style="display:flex; justify-content:space-between; width:100%;">
+                  <strong style="font-size:1.05rem; color:#b91c1c;">🥔 Potato (Solanum tuberosum)</strong>
+                  <span class="param-status-pill low">Requires Potash</span>
+                </div>
+                <div style="font-size:0.8rem; color:#b91c1c; margin-top:6px;">Biological N-Fixation: <strong>FALSE (Consumes heavy K &amp; N)</strong></div>
+                <p style="font-size:0.75rem; color:#334155; margin-top:6px;">Heavy potash feeder; does NOT fix nitrogen. Must be rotated with leguminous pulses to avoid soil exhaustion and wilt.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==============================================================
+             PAGE VIEW: CROP & ROTATION SIMULATOR
+             ============================================================== -->
+        <div class="view-panel" id="view-rotation">
+          <div class="nature-card">
+            <div class="nature-card-header">
+              <div class="card-title-left">
+                <i class="fas fa-sync-alt"></i>
+                <h2>Biological Crop Rotation Simulator</h2>
+              </div>
+              <span class="badge-highly-suitable">Rhizobium Nitrogen Fixation</span>
+            </div>
+            <p style="font-size:0.88rem; color:#64748b; margin-bottom:16px;">
+              Select your previous crop to calculate biological nitrogen depletion vs fixation and pest disruption.
+            </p>
+            <div style="background:#f8fafc; padding:16px; border-radius:12px; margin-bottom:16px;">
+              <label style="font-weight:700; color:var(--text-main); font-size:0.9rem;">Select Previous Harvested Crop:</label>
+              <select id="sel-previous-crop" style="margin-left:12px; padding:6px 14px; border-radius:8px; border:1px solid #cbd5e1; font-family:var(--font-body); font-weight:600;">
+                <option value="rice">Rice (Paddy) — Exhaustive Cereal</option>
+                <option value="wheat">Wheat — Exhaustive Cereal</option>
+                <option value="potato">Potato — Heavy Potash Consumer (NOT a Nitrogen Fixer)</option>
+                <option value="chickpea" selected>Chickpea (Gram) — Symbiotic Rhizobium N-Fixer</option>
+                <option value="moong">Green Gram (Moong) — Symbiotic N-Fixer</option>
+              </select>
+            </div>
+
+            <!-- Dynamic 3-Step Rotation Flowchart -->
+            <div class="rotation-strip-box" style="margin-bottom:16px;">
+              <div class="rotation-crop-pill">
+                <span class="rotation-crop-pill-label">Harvested Crop</span>
+                <span class="rotation-crop-pill-name" id="rot-step-prev">🌾 Rice</span>
+              </div>
+              <i class="fas fa-arrow-right rotation-arrow-icon"></i>
+              <div class="rotation-crop-pill" style="border-color:#86efac; background:#f0fdf4;">
+                <span class="rotation-crop-pill-label" style="color:#15803d;">Restorative Stage (Rhizobium)</span>
+                <span class="rotation-crop-pill-name" id="rot-step-next" style="color:#15803d;">🌱 Chickpea (Legume)</span>
+              </div>
+              <i class="fas fa-arrow-right rotation-arrow-icon"></i>
+              <div class="rotation-crop-pill">
+                <span class="rotation-crop-pill-label">Next High-Yield Crop</span>
+                <span class="rotation-crop-pill-name" id="rot-step-third">🌾 Wheat</span>
+              </div>
+            </div>
+
+            <div style="background:#fffbeb; border:1px solid #fde68a; padding:14px; border-radius:10px;" id="rotation-sim-box">
+              <i class="fas fa-lightbulb" style="color:#d97706; font-size:1.2rem;"></i>
+              <div>
+                <strong>Scientific Recommendation:</strong> After Rice, plant a leguminous pulse such as Chickpea or Moong. Root nodules with compatible <em>Mesorhizobium ciceri</em> bacteria fix 30-50 kg/ha atmospheric nitrogen. Note: Potato does NOT perform biological nitrogen fixation.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==============================================================
+             PAGE VIEW: LOCATION SETTINGS
+             ============================================================== -->
+        <div class="view-panel" id="view-location">
+          <div class="nature-card">
+            <div class="nature-card-header">
+              <div class="card-title-left">
+                <i class="fas fa-map-marker-alt"></i>
+                <h2>Location Settings &amp; Geocoding</h2>
+              </div>
+            </div>
+            <p style="font-size:0.88rem; color:#64748b; margin-bottom:14px;">
+              Default: <strong>Kanpur, Uttar Pradesh, India</strong> (26.4499° N, 80.3319° E). Update coordinates to fetch local Open-Meteo forecasts for any farm globally.
+            </p>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
+              <input type="text" id="loc-search-box" placeholder="Search city (e.g. Kanpur, Lucknow, Pune)..." style="flex:1; min-width:240px; padding:10px 16px; border-radius:8px; border:1px solid #cbd5e1; font-family:var(--font-body);">
+              <button style="background:#16a34a; color:#fff; border:none; padding:10px 20px; border-radius:8px; font-weight:700; cursor:pointer;" id="btn-search-loc">Search City</button>
+            </div>
+            
+            <div style="margin-bottom:16px;">
+              <label style="font-size:0.8rem; font-weight:700; color:#475569; display:block; margin-bottom:8px;">Quick Indian Agricultural Hubs:</label>
+              <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                <button class="btn-preset-city" data-name="Kanpur, Uttar Pradesh" data-lat="26.4499" data-lon="80.3319" style="padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; background:#fff; cursor:pointer; font-weight:600;">📍 Kanpur (UP)</button>
+                <button class="btn-preset-city" data-name="Lucknow, Uttar Pradesh" data-lat="26.8467" data-lon="80.9462" style="padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; background:#fff; cursor:pointer; font-weight:600;">📍 Lucknow (UP)</button>
+                <button class="btn-preset-city" data-name="Varanasi, Uttar Pradesh" data-lat="25.3176" data-lon="82.9739" style="padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; background:#fff; cursor:pointer; font-weight:600;">📍 Varanasi (UP)</button>
+                <button class="btn-preset-city" data-name="Ludhiana, Punjab" data-lat="30.9010" data-lon="75.8573" style="padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; background:#fff; cursor:pointer; font-weight:600;">📍 Ludhiana (PB)</button>
+                <button class="btn-preset-city" data-name="Indore, Madhya Pradesh" data-lat="22.7196" data-lon="75.8577" style="padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; background:#fff; cursor:pointer; font-weight:600;">📍 Indore (MP)</button>
+                <button class="btn-preset-city" data-name="Pune, Maharashtra" data-lat="18.5204" data-lon="73.8567" style="padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; background:#fff; cursor:pointer; font-weight:600;">📍 Pune (MH)</button>
+              </div>
+            </div>
+
+            <div id="loc-results-list"></div>
+          </div>
+        </div>
+
+        <!-- ==============================================================
+             PAGE VIEW: DEVICE MANAGEMENT
+             ============================================================== -->
+        <div class="view-panel" id="view-device">
+          <div class="nature-card">
+            <div class="nature-card-header">
+              <div class="card-title-left">
+                <i class="fas fa-microchip"></i>
+                <h2>ESP32 Device Diagnostics &amp; Hardware Mapping</h2>
+              </div>
+              <span class="badge-highly-suitable">v2.5.0-UNIFIED</span>
+            </div>
+            <div class="soil-report-row1">
+              <div class="soil-param-tile tint-ec">
+                <div class="param-tile-header"><span>Hardware Status</span></div>
+                <div class="param-tile-val" id="device-hardware-status" style="font-size:0.95rem; color:#dc2626;">ESP32 Offline (No Heartbeat)</div>
+              </div>
+              <div class="soil-param-tile tint-ec">
+                <div class="param-tile-header"><span>Designated Sector</span></div>
+                <div class="param-tile-val" style="font-size:0.95rem;">Irrigation Zone One</div>
+              </div>
+              <div class="soil-param-tile tint-ec">
+                <div class="param-tile-header"><span>Modbus RS-485</span></div>
+                <div class="param-tile-val" style="font-size:0.95rem;">GPIO 16, 17, 4</div>
+              </div>
+              <div class="soil-param-tile tint-ec">
+                <div class="param-tile-header"><span>Pump Relay</span></div>
+                <div class="param-tile-val" style="font-size:0.95rem;">GPIO 26</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==============================================================
+             PAGE VIEW: SYSTEM SETTINGS
+             ============================================================== -->
+        <div class="view-panel" id="view-settings">
+          <div class="nature-card">
+            <div class="nature-card-header">
+              <div class="card-title-left">
+                <i class="fas fa-cog"></i>
+                <h2>System Settings &amp; PWA Installation</h2>
+              </div>
+            </div>
+            <p style="font-size:0.88rem; color:#64748b; margin-bottom:16px;">
+              HARIT DHAROHAR • AI-Powered Smart Agriculture &amp; Soil Intelligence Platform.
+            </p>
+            <button class="btn-top-install" id="btn-settings-install" style="width:fit-content;">
+              <i class="fas fa-download"></i> Install Harit Dharohar App
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Mobile Bottom Navigation Bar (Matches Right Screen in Uploaded Mockup) -->
+      <nav class="mobile-bottom-nav">
+        <a class="mobile-nav-btn active" data-view="view-dashboard">
+          <i class="fas fa-home"></i> <span>Home</span>
+        </a>
+        <a class="mobile-nav-btn" data-view="view-soil">
+          <i class="fas fa-flask"></i> <span>Soil</span>
+        </a>
+        <a class="mobile-nav-btn" data-view="view-weather">
+          <i class="fas fa-cloud-sun"></i> <span>Weather</span>
+        </a>
+        <a class="mobile-nav-btn" data-view="view-irrigation">
+          <i class="fas fa-tint"></i> <span>Irrigation</span>
+        </a>
+        <a class="mobile-nav-btn" data-view="view-advisor">
+          <i class="fas fa-robot"></i> <span>AI</span>
+        </a>
+      </nav>
+
+    </main>
+  </div>
+
+  <!-- Main JavaScript App (Universal Standalone Engine) -->
+  <script src="js/bundle.js"></script>
+</body>
+</html>
